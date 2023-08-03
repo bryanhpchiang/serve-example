@@ -1,10 +1,16 @@
-Background:
+## Background:
 - `Ingress` has a handle to `Inference`
 - `Ingress` has 1 worker, `Inference` one has 10 workers
 - `client.py` dispatches 10 concurrent requests
 - 1 machine, 16 CPU cores available
 
-Questions:
+## Reproducing
+```
+python server.py # in one window
+python client.py # in another
+```
+
+## Questions:
 - Why are all not all the print calls from insider `Ingress` (denoted with `[WORKER]`) printed?
 - There are a few inference calls that only take ~25ms. 
     - Why do all the ingress timings at least 60ms? Is that extra 30ms of time being added by Ray?
@@ -12,6 +18,7 @@ Questions:
     - If so, what's the point of defining `num_replicas` if Ray won't uniformly distribute the load?
 
 
+Server logs:
 ```
 (HTTPProxyActor pid=268697) INFO:     ('127.0.0.1', 45552) - "WebSocket /" [accepted]
 (HTTPProxyActor pid=268697) INFO:     connection open
@@ -41,6 +48,7 @@ Questions:
 (ServeReplica:default_Ingress pid=268756) INFO 2023-08-02 18:07:03,569 default_Ingress default_Ingress#OmwEVs oQzRSNNGan / default replica.py:723 - __CALL__ OK 120.1ms
 ```
 
+Client logs:
 ```
 Took 0.06707334518432617 seconds for request 329934e0-abdc-4887-a54f-92872a2ffb3f to be fulfilled.
 Took 0.06737732887268066 seconds for request d443f21d-aa7e-417f-a217-a823251d9324 to be fulfilled.
